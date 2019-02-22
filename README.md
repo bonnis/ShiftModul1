@@ -238,7 +238,7 @@ Bisa dilakukan perintah *awk* seperti ini :
 ```sh
 awk '(tolower($0) ~ /cron/)&&(tolower($0) !~ /sudo/)&&(NF<13) {print}'
 ```
-awk tersebut beekrja dengan membuat seluruh input menjadi *lower case* lalu dibandingkan dengan pola cron dan sudo. Maksud dari pola diatas adalah 
+awk tersebut bekerja dengan membuat seluruh input menjadi *lower case* lalu dibandingkan dengan pola cron dan sudo. Maksud dari pola diatas adalah 
 >Print jika terdapat pola \cron\ **dan** tak terdapat pola \sudo\ **dan** jumlah *field* kurang dari 13  
 
 Lalu script akan dijalankan setiap 6 menit dari menit 2 hingga 30, maka cron nya adalah :
