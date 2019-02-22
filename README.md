@@ -67,11 +67,11 @@ Hasil outputnya lalu di sort sesuai dengan jumlah penjualan menggunakan perintah
 ```sh
 sort -t ',' -nrk2 
 ```
-Keterangan argumen :   
-* \-t   : men-set field separator(disini ',' )
-* \-n   : men-sort angka
-* \-r   : hasil sort di reverse(karena dicari yang terbesar)
-* \-k2   : menspesifikasi bahwa penyortingan dilakukan sesuai nilai di kolom dua
+>Keterangan argumen :   
+>* \-t   : men-set field separator(disini ',' )
+>* \-n   : men-sort angka
+>* \-r   : hasil sort di reverse(karena dicari yang terbesar)
+>* \-k2   : menspesifikasi bahwa penyortingan dilakukan sesuai nilai di kolom dua
   
 Hasil output sortnya lalu di masukkan lagi ke dalam perintah *awk* untuk diambil nilai terbesarnya seperi ini : 
 
