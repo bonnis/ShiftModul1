@@ -166,7 +166,7 @@ for i in `seq 1 $length`
 ```
 dimana dalam perulangan itu terdapat beberapa kondisi, yaitu
 
-1. ika nilai variabel minimum (dalam hal ini berisi 7) lebih besar sama dengan nilai counter, maka variabel char akan memilih satu karakter dimana nilai indexnya akan dipilih secara random. Ubah nilai dari flag suatu karakter untuk menandai. Kemudian karakter tersebut dimasukkan kedalam variabel password.
+1. Jika nilai variabel minimum (dalam hal ini berisi 7) lebih besar sama dengan nilai counter, maka variabel char akan memilih satu karakter dimana nilai indexnya akan dipilih secara random. Ubah nilai dari flag suatu karakter untuk menandai. Kemudian karakter tersebut dimasukkan kedalam variabel password.
 
 ```sh        
         if [[ $minimum -ge $cnt ]]; then
@@ -209,7 +209,7 @@ dimana dalam perulangan itu terdapat beberapa kondisi, yaitu
         fi
     (( ++cnt ))
 ```
-Seletah itu buat variabel yang berisi nama file dan angka.
+Setelah itu buat variabel yang berisi nama file dan angka.
 
 ```sh
     file=password
