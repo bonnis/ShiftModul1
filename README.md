@@ -71,7 +71,7 @@ Keterangan argumen :
 * \-t   : men-set field separator(disini ',' )
 * \-n   : men-sort angka
 * \-r   : hasil sort di reverse(karena dicari yang terbesar)
-* \-k   : menspesifikasi bahwa penyortingan dilakukan sesuai nilai di kolom dua
+* \-k2   : menspesifikasi bahwa penyortingan dilakukan sesuai nilai di kolom dua
   
 Hasil output sortnya lalu di masukkan lagi ke dalam perintah *awk* untuk diambil nilai terbesarnya seperi ini : 
 
@@ -98,9 +98,7 @@ Penyelesaian masalah ini kurang lebih sama dengan masalah sebelumnya, hanya di *
 ```sh
     awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}
 ```
-Argumen -v diatas dipakai untuk memasukkan variabel *$data* ke dalam *awk* lalu memisalkannya dengan nama *add*. variabel *add* ini lalu dipakai sebagai pola pencarian dari *awk*
-
-Hasil outputnya lalu di sort, diambil 3 teratas lalu dimasukkan ke dalam variabel untuk dijadikan input untuk masalah berikutnya
+Argumen -v diatas dipakai untuk memasukkan variabel *$data* ke dalam *awk* lalu memisalkannya dengan nama *add*. variabel *add* ini lalu dipakai sebagai pola pencarian dari *awk*. Hasil outputnya lalu di sort, diambil 3 teratas lalu dimasukkan ke dalam variabel untuk dijadikan input untuk masalah berikutnya
 
 ```sh
         dataraw=`awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'`
@@ -112,7 +110,7 @@ Data *product line* terbanyak dipakai lagi sebagai pola di dalam perintah *awk*.
 ```sh
 awk -F ',' -v add="$data" -v add1="$data1" '($1 ~ add)&&($4 ~ add1)&&($7=="2012") {array[$6]=array[$6]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'
 ```
-Variabel *\$data1* diatas adalah hasil pemisahan dari variabel *\$dataraw*
+Variabel *\$data1* diatas adalah hasil pemisahan dari variabel *\$dataraw*. Prosedur diatas lalu dulangi tiga kali dan didapatkan tiga *product* di masing-masing *product line*
 
 
 ---
