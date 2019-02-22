@@ -339,7 +339,7 @@ awk tersebut bekerja dengan membuat seluruh input menjadi *lower case* lalu diba
 
 >Print jika terdapat pola /cron/ **dan** tak terdapat pola /sudo/ **dan** jumlah *field* kurang dari 13  
 
-Fungsi *tolower()* hanya mengubah apa yang akan dicek oleh *awk* tanpa mengubah isi dari file sebenarnya, sehingga tidak mengubah output dari *awk* menjadi *lower case* semua.
+Fungsi *tolower()* hanya mengubah apa yang akan dicek oleh *awk* tanpa mengubah isi dari file sebenarnya, sehingga tidak mengubah semua output dari *awk* menjadi *lower case*.
 
 Lalu script akan dijalankan setiap 6 menit dari menit 2 hingga 30, maka cron nya adalah :
 ```
