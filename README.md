@@ -21,16 +21,16 @@ Pertama-tama file _nature.zip_ di extract dengan menggunakan perintah _unzip_ .
 
 Setelah dilakukan pengekstrakan file, ditemukan bahwa file-file didalam *zip* tersebut adalah hexdump dari file jpg yang telah di encode ke dalam bentuk base 64. Oleh karena itu, dilakukan peng-dekode-an base64 yang dilanjutkan dengan peng-dekode-an hexdump menjadi file gambar. Kedua hal ini masing-masing dilakukan dengan perintah *base64 \-d* dan *xxd \-r*
 ```sh
-    base64 -d $namafile | xxd -r > "$fileoutput.jpg"
+base64 -d $namafile | xxd -r > "$fileoutput.jpg"
 ```
 Karena jumlah file sangat banyak, maka peng-dekode-an dilakukan secara looping
     
 ```sh
-    for i in ~/nature/*.jpg
-    do
-	    bas="`basename $i`"
-	    base64 -d $i | xxd -r > ./decoded/$bas
-    done
+for i in ~/nature/*.jpg
+do
+	bas="`basename $i`"
+	base64 -d $i | xxd -r > ./decoded/$bas
+done
 ```
 Disini perintah *basename* dipakai untuk mendapatkan nama file dari path file tersebut.
 
@@ -59,13 +59,13 @@ Pertama-tama dicari dahulu negara dengan penjualan terbanyak pada tahun 2012 den
 Hal yang dilakukan adalah dengan mendapatkan semua entri yang bertahun 2012 terlebih dahulu, lalu menjumlahkannya sesuai dengan nama negara seperti ini :
 
 ```sh
-    awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv
+awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv
 ```
 
 Hasil outputnya lalu di sort sesuai dengan jumlah penjualan menggunakan perintah *sort*
 
 ```sh
-    sort -t ',' -nrk2 
+sort -t ',' -nrk2 
 ```
 Keterangan argumen :   
 * \-t   : men-set field separator(disini ',' )
@@ -76,13 +76,13 @@ Keterangan argumen :
 Hasil output sortnya lalu di masukkan lagi ke dalam perintah *awk* untuk diambil nilai terbesarnya seperi ini : 
 
 ```sh
-    awk -F ',' 'NR==1{print $1}
+awk -F ',' 'NR==1{print $1}
 ```
 
 Jika ketiga perintah tersebut disatukan, akan menjadi seperti ini :
 
 ```sh
-    awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2  | awk -F ',' 'NR==1{print $1}'
+awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2  | awk -F ',' 'NR==1{print $1}'
 ```
 
 Hasil output dari perintah tersebut lalu dimasukkan ke dalam sebuah variabel untuk dipakai di masalah selanjutnya
@@ -96,12 +96,12 @@ Setelah didapatkan negara dengan penjualan terbesar, maka masalah selanjutnya ad
 Penyelesaian masalah ini kurang lebih sama dengan masalah sebelumnya, hanya di *awk* nya ditambahkan nama negara sebelumnya sebagai pola.
 
 ```sh
-    awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}
+awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}
 ```
 Argumen -v diatas dipakai untuk memasukkan variabel *$data* ke dalam *awk* lalu memisalkannya dengan nama *add*. variabel *add* ini lalu dipakai sebagai pola pencarian dari *awk*. Hasil outputnya lalu di sort, diambil 3 teratas lalu dimasukkan ke dalam variabel untuk dijadikan input untuk masalah berikutnya
 
 ```sh
-        dataraw=`awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'`
+dataraw=`awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'`
 ```
 Masalah ketiga kurang lebih sama dengan masalah-masalah sebelumnya, hanya saja karena diambil tiga produk terbanyak dari tiga produk sebelumnya maka prosedur diulangi tiga kali.
 
@@ -131,6 +131,8 @@ d. Password yang dihasilkan tidak boleh sama.
 
 ### Jawab
 
+Untuk menghasilkan password random, pertama-tama dibuat tiga array berbeda
+
 ---
 
 ## Nomor 4
@@ -152,6 +154,59 @@ d. Backup file syslog setiap jam.
 e. dan buatkan juga bash script untuk dekripsinya.  
 
 ### Jawab
+
+Pertama-tama dibuat fungsi dan *chr()* sebagai fungsi pembantu untuk mengubah ASCII ke karakter.
+
+```sh
+chr(){
+    printf "\x$(printf %x $1)"
+}
+```
+Setelah itu dicari nilai offset nya sesuai dengan jam dengan menggunakan perintah *date*.
+```sh
+offset=`date "+%-H"`
+```
+Setelah itu dilakukan penghitungan pergeseran huruf dengan menambahkan offset dengan nilai huruf pertama (yaitu 65).
+```sh
+let letterb=65+$offset-1
+let letterbend=$letterb+1
+```
+Hal yang sama dilakukan untuk huruf kecil
+```sh
+let letters=97+$offset-1
+let lettersend=$letters+1
+```
+Hasil perhitungan lalu dimasukkan ke dalam fungsi *tr* seperti ini:
+```sh
+tr '[A-Za-z]' "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr $letters)]"
+```
+
+**Keterangan :** 
+><br>
+>
+>```sh 
+>tr "[A-Z]" "[Y-ZA-X] 
+>```
+>Akan mengganti {A,B,C,...,X,Y,Z} dengan {Y,Z,A,...,V,W,X}
+>
+><br>
+
+Hasilnya lalu di di outputkan menjadi text sesuai dengan waktu dan tanggal pada saat ini seperti ini :
+```sh
+cat /var/log/syslog | tr '[A-Za-z]' "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr $letters)]" > ./clog/"$filename".txt
+```
+
+Untuk melakukan dekripsi, maka harus diketahui jamnya dari nama filenya. Perintah dibawah akan mengambil angka jam dari nama file.
+```sh
+offset=$(echo -n "$(echo -n $(basename $1) | cut -c1-2)" | tr -d '0')
+```
+Disini *cut* berfungsi mengambil dua digit pertama nama file, lalu *tr* bertugas untuk menghilangkan leading zero. Pendekripsian lalu di lakukan dengan menggunakan perintah *tr* dengan argumen yang sama seperti sebelumnya, hanya saja ditukar tempatnya.
+
+```sh
+tr "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr $letters)]" '[A-Za-z]'
+```
+Lalu di export hasilnya dalam bentuk .txt .
+
 
 ---
 

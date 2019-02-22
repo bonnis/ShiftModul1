@@ -10,9 +10,6 @@ chr(){
     printf "\x$(printf %x $1)"
 }
 
-ord(){
-    printf '%d' "$1"
-}
 
 offset=$(echo -n "$(echo -n $(basename $1) | cut -c1-2)" | tr -d '0')
 

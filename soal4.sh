@@ -4,10 +4,6 @@ chr(){
     printf "\x$(printf %x $1)"
 }
 
-ord(){
-    printf '%d' "$1"
-}
-
 if [ ! -d "clog" ]
 then
     mkdir "clog"
