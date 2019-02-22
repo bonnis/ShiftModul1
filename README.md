@@ -131,9 +131,107 @@ d. Password yang dihasilkan tidak boleh sama.
 
 ### Jawab
 
-Untuk menghasilkan password random, pertama-tama dibuat tiga array berbeda
+Untuk menghasilkan password random, pertama-tama dibuat tiga array berbeda, yaitu array angka 0-9, huruf a-z, dan huruf A-Z, dan juga variabel panjang karakter.
 
----
+```sh
+length=12
+digit=({0..9})
+lower=({a..z})
+upper=({A..Z})
+```
+Selanjutnya pendeklarasian variable array charArray yang berisi gabungan array
+integer, huruf kecil, dan huruf besar juga pendeklarasian variabel string password,
+variabel minimum, dan variabel pass sebagai flag.
+
+```sh
+charArray=(${digit[*]}${lower[*]}${upper[*]})
+arrayLength=${#charArray[*]}
+password=""
+let minimum=$length-5
+pass=0
+```
+Selanjutnya terdapat variabel counter dan variabel flag sebagai penanda karakter
+yang terpilih.
+
+```sh
+cnt=0;
+isUp=0
+isLo=0
+isNum=0
+```
+Kemudian masuk keperulangan sejumlah panjang karakter untuk men-generate password,
+
+```sh
+for i in `seq 1 $length`
+```
+dimana dalam perulangan itu terdapat beberapa kondisi, yaitu
+
+1. ika nilai variabel minimum (dalam hal ini berisi 7) lebih besar sama dengan nilai counter, maka variabel char akan memilih satu karakter dimana nilai indexnya akan dipilih secara random. Ubah nilai dari flag suatu karakter untuk menandai. Kemudian karakter tersebut dimasukkan kedalam variabel password.
+
+```sh        
+        if [[ $minimum -ge $cnt ]]; then
+            index=$((RANDOM%arrayLength))
+            char=${charArray[$index]}
+            if [[ $char =~ [A-Z] ]]; then
+                isUp=1
+            elif [[ $char =~ [a-z] ]]; then
+                isLo=1
+            elif [[ $char =~ [0-9] ]]; then
+                isNum=1
+            fi
+            password=${password}${char}
+```
+
+2. Kondisi kedua akan berjalan jika kondisi pertama tidak memenuhi syarat. Dalam kondisi ini juga terdapat beberapa kondisi. Pertama jika belum ada karakter uppercase yang dipilih, yang akan di random hanya index yang berisi karakter uppercase saja. Begitu juga dengan kondisi selanjutnya, kecuali jika semua karakter sudah terpilih, maka karakter akan dipilih secara random. Di akhir perulangan counter akan bertambah.
+
+```sh   
+     else
+            if [[ isUp -eq 0 ]]; then
+                index=$((RANDOM%26))
+                char=${upper[$index]}
+                password=${password}${char}
+                isUp=1;
+            elif [[ isLo -eq 0 ]]; then
+                index=$((RANDOM%26))
+                char=${lower[$index]}
+                password=${password}${char}
+                isLo=1;
+            elif [[ isNum -eq 0 ]]; then
+                index=$((RANDOM%10))
+                char=${digit[$index]}
+                password=${password}${char}
+                isNum=1
+            else
+                index=$((RANDOM%arrayLength))
+                char=${charArray[$index]}
+                password=${password}${char}
+            fi
+        fi
+    (( ++cnt ))
+```
+Seletah itu buat variabel yang berisi nama file dan angka.
+
+```sh
+    file=password
+    number=1
+```
+Kemudian lakukan perulangan untuk mengecek dan menentukan nama file. Jika nama file tersebut telah ada atau jika password tersebut telah dibuat sebelumnya, maka number akan increment sampai kedua kondisi tersebut tidak terpenuhi.
+
+```sh
+    while test -e "$file$number.txt"; do
+     if [ $(cat "$file$number.txt") == $password ]; then
+            pass=0
+        fi
+        (( ++number ))
+    done
+```
+Terakhir password yang telah dibuat disimpan ke dalam file .txt dengan nama yang telah ditentukan.
+
+```sh
+fname="$file$number.txt"
+
+echo $password > "$fname"
+```
 
 ## Nomor 4
 
