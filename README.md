@@ -183,17 +183,22 @@ tr '[A-Za-z]' "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr
 
 **Keterangan :** 
 ><br>
+>Perintah
 >
 >```sh 
->tr "[A-Z]" "[Y-ZA-X] 
+>tr "[A-Z]" "[Y-ZA-X]" 
 >```
->Akan mengganti {A,B,C,...,X,Y,Z} dengan {Y,Z,A,...,V,W,X}
+>akan mengganti {A,B,C,...,X,Y,Z} dengan {Y,Z,A,...,V,W,X}
 >
 ><br>
 
 Hasilnya lalu di di outputkan menjadi text sesuai dengan waktu dan tanggal pada saat ini seperti ini :
 ```sh
 cat /var/log/syslog | tr '[A-Za-z]' "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr $letters)]" > ./clog/"$filename".txt
+```
+Enkripsi akan dilakukan setiap jam, maka cron nya adalah sebagai berikut :
+```
+0 */1 * * * ~/soal4.sh
 ```
 
 Untuk melakukan dekripsi, maka harus diketahui jamnya dari nama filenya. Perintah dibawah akan mengambil angka jam dari nama file.
@@ -228,5 +233,17 @@ d. Jalankan script tadi setiap 6 menit dari menit ke 2 hingga 30, contoh
 13:02, 13:08, 13:14, dst.  
 
 ### Jawab
+
+Bisa dilakukan perintah *awk* seperti ini :
+```sh
+awk '(tolower($0) ~ /cron/)&&(tolower($0) !~ /sudo/)&&(NF<13) {print}'
+```
+awk tersebut beekrja dengan membuat seluruh input menjadi *lower case* lalu dibandingkan dengan pola cron dan sudo. Maksud dari pola diatas adalah 
+>Print jika terdapat pola \cron\ **dan** tak terdapat pola \sudo\ **dan** jumlah *field* kurang dari 13  
+
+Lalu script akan dijalankan setiap 6 menit dari menit 2 hingga 30, maka cron nya adalah :
+```
+2-30/6 * * * * ~/soal5.sh
+```
 
 ---
