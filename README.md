@@ -1,5 +1,6 @@
 # Laporan Soal Shift Modul 1
-Laporan pengerjaan soal shift modul pertama kelas SISOP E  
+Laporan pengerjaan soal shift modul pertama  
+Kelas Sistem Operasi E Jurusan Informatika Institut Teknologi Sepuluh Nopember  
 Oleh Kelompok E10 
 
 
@@ -18,7 +19,7 @@ Pertama-tama file _nature.zip_ di extract dengan menggunakan perintah _unzip_ .
 
     unzip nature.zip
 
-Setelah dilakukan pengekstrakan file, ditemukan bahwa file-file didalam *zip* tersebut adalah hexdump dari file jpg yang telah di encode ke dalam bentuk base 64. Oleh karena itu, dilakukan peng-dekode-an base64 yang dilanjutkan dengan peng-dekode-an hexdump menjadi file gambar. Kedua hal ini masing-masing dilakukan dengan perintah *base64 -d* dan *xxd -r*
+Setelah dilakukan pengekstrakan file, ditemukan bahwa file-file didalam *zip* tersebut adalah hexdump dari file jpg yang telah di encode ke dalam bentuk base 64. Oleh karena itu, dilakukan peng-dekode-an base64 yang dilanjutkan dengan peng-dekode-an hexdump menjadi file gambar. Kedua hal ini masing-masing dilakukan dengan perintah *base64 \-d* dan *xxd \-r*
 ```sh
     base64 -d $namafile | xxd -r > "$fileoutput.jpg"
 ```
@@ -31,7 +32,11 @@ Karena jumlah file sangat banyak, maka peng-dekode-an dilakukan secara looping
 	    base64 -d $i | xxd -r > ./decoded/$bas
     done
 ```
-Disini perintah *basename* dipakai untuk mendapatkan nama file dari path file tersebut
+Disini perintah *basename* dipakai untuk mendapatkan nama file dari path file tersebut.
+
+Setelah itu, dilakukan penyettingan crontab sesuai keinginan soal :
+
+    14 14 14 2 5 ~/Nomor1.sh
 
 ---
 
@@ -41,13 +46,74 @@ Anda merupakan pegawai magang pada sebuah perusahaan retail, dan anda diminta
 untuk memberikan laporan berdasarkan file WA_Sales_Products_2012-14.csv.
 Laporan yang diminta berupa:
 
-a. Tentukan negara dengan penjualan(quantity) terbanyak pada tahun  
+a. Tentukan negara dengan penjualan(quantity) terbanyak pada tahun 2012.  
 b. Tentukan tiga product line yang memberikan penjualan(quantity)
 terbanyak pada soal poin a.  
 c. Tentukan tiga product yang memberikan penjualan(quantity)
 terbanyak berdasarkan tiga product line yang didapatkan pada soal
 poin b.
 ### Jawab
+
+Pertama-tama dicari dahulu negara dengan penjualan terbanyak pada tahun 2012 dengan menggunakan *awk*
+
+Hal yang dilakukan adalah dengan mendapatkan semua entri yang bertahun 2012 terlebih dahulu, lalu menjumlahkannya sesuai dengan nama negara seperti ini :
+
+```sh
+    awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv
+```
+
+Hasil outputnya lalu di sort sesuai dengan jumlah penjualan menggunakan perintah *sort*
+
+```sh
+    sort -t ',' -nrk2 
+```
+Keterangan argumen :   
+* \-t   : men-set field separator(disini ',' )
+* \-n   : men-sort angka
+* \-r   : hasil sort di reverse(karena dicari yang terbesar)
+* \-k   : menspesifikasi bahwa penyortingan dilakukan sesuai nilai di kolom dua
+  
+Hasil output sortnya lalu di masukkan lagi ke dalam perintah *awk* untuk diambil nilai terbesarnya seperi ini : 
+
+```sh
+    awk -F ',' 'NR==1{print $1}
+```
+
+Jika ketiga perintah tersebut disatukan, akan menjadi seperti ini :
+
+```sh
+    awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2  | awk -F ',' 'NR==1{print $1}'
+```
+
+Hasil output dari perintah tersebut lalu dimasukkan ke dalam sebuah variabel untuk dipakai di masalah selanjutnya
+
+```sh
+ data=`awk -F ',' '$7=="2012"{array[$1]=array[$1]+$10}END{for(i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2  | awk -F ',' 'NR==1{print $1}'`
+```
+
+Setelah didapatkan negara dengan penjualan terbesar, maka masalah selanjutnya adalah mencari tiga *product line* dengan *quantity* tertinggi. 
+
+Penyelesaian masalah ini kurang lebih sama dengan masalah sebelumnya, hanya di *awk* nya ditambahkan nama negara sebelumnya sebagai pola.
+
+```sh
+    awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}
+```
+Argumen -v diatas dipakai untuk memasukkan variabel *$data* ke dalam *awk* lalu memisalkannya dengan nama *add*. variabel *add* ini lalu dipakai sebagai pola pencarian dari *awk*
+
+Hasil outputnya lalu di sort, diambil 3 teratas lalu dimasukkan ke dalam variabel untuk dijadikan input untuk masalah berikutnya
+
+```sh
+        dataraw=`awk -F ',' -v add="$data" '($1 ~ add)&&($7=="2012"){array[$4]=array[$4]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'`
+```
+Masalah ketiga kurang lebih sama dengan masalah-masalah sebelumnya, hanya saja karena diambil tiga produk terbanyak dari tiga produk sebelumnya maka prosedur diulangi tiga kali.
+
+Data *product line* terbanyak dipakai lagi sebagai pola di dalam perintah *awk*.
+
+```sh
+awk -F ',' -v add="$data" -v add1="$data1" '($1 ~ add)&&($4 ~ add1)&&($7=="2012") {array[$6]=array[$6]+$10}END{for (i in array) print i "," array[i]}' WA_Sales_Products_2012-14.csv | sort -t ',' -nrk2 | awk  -F ',' 'NR<3 {print $1 ", "} NR==3{print $1}'
+```
+Variabel *\$data1* diatas adalah hasil pemisahan dari variabel *\$dataraw*
+
 
 ---
 ## Nomor 3
