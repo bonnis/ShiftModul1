@@ -181,10 +181,9 @@ Hasil perhitungan lalu dimasukkan ke dalam fungsi *tr* seperti ini:
 tr '[A-Za-z]' "[$(chr $letterbend)-ZA-$(chr $letterb)$(chr $lettersend)-za-$(chr $letters)]"
 ```
 
->**Keterangan :** 
-><br>
+>**Keterangan :**  
+> 
 >Perintah
->
 >```sh 
 >tr "[A-Z]" "[Y-ZA-X]" 
 >```
