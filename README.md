@@ -336,7 +336,10 @@ Bisa dilakukan perintah *awk* seperti ini :
 awk '(tolower($0) ~ /cron/)&&(tolower($0) !~ /sudo/)&&(NF<13) {print}'
 ```
 awk tersebut bekerja dengan membuat seluruh input menjadi *lower case* lalu dibandingkan dengan pola cron dan sudo. Maksud dari pola diatas adalah 
+
 >Print jika terdapat pola /cron/ **dan** tak terdapat pola /sudo/ **dan** jumlah *field* kurang dari 13  
+
+Fungsi *tolower()* hanya mengubah apa yang akan dicek oleh *awk* tanpa mengubah isi dari file sebenarnya, sehingga tidak mengubah output dari *awk* menjadi *lower case* semua.
 
 Lalu script akan dijalankan setiap 6 menit dari menit 2 hingga 30, maka cron nya adalah :
 ```
